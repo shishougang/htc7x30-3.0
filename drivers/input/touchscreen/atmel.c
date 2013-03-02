@@ -1272,20 +1272,20 @@ static void multi_input_report(struct atmel_ts_data *ts)
 #ifdef CONFIG_TOUCHSCREEN_ATMEL_SWEEP2WAKE
 			//left -> right
 			if((ts->finger_count == 1) && (scr_suspended == true) && (s2w_switch == 1)) {
-				prevx = 30;
-				nextx = 200;
+				prevx = 0;
+				nextx = 333;
 				if ((barrier[0] == true) ||
 				   ((ts->finger_data[loop_i].x > prevx) &&
 				    (ts->finger_data[loop_i].x < nextx) &&
 				    (ts->finger_data[loop_i].y > 980))) {					
-					prevx = 200;
-					nextx = 800;
+					prevx = 333;
+					nextx = 667;
 					barrier[0] = true;
 					if ((barrier[1] == true) ||
 					   ((ts->finger_data[loop_i].x > prevx) &&
 					    (ts->finger_data[loop_i].x < nextx) &&
 					    (ts->finger_data[loop_i].y > 980))) {
-						prevx = 800;
+						prevx = 667;
 						barrier[1] = true;
 						if ((ts->finger_data[loop_i].x > prevx) &&
 						    (ts->finger_data[loop_i].y > 980)) {
@@ -1302,19 +1302,19 @@ static void multi_input_report(struct atmel_ts_data *ts)
 			} else if ((s2w_switch > 0) && (scr_suspended == false) && (ts->finger_count == 1)) {
 				scr_on_touch=true;
 				prevx = 1000;
-				nextx = 800;
+				nextx = 667;
 				if ((barrier[0] == true) ||
 				   ((ts->finger_data[loop_i].x < prevx) &&
 			    	    (ts->finger_data[loop_i].x > nextx) &&
 				    (ts->finger_data[loop_i].y > 980))) {
-					prevx = 800;
-					nextx = 200;
+					prevx = 667;
+					nextx = 333;
 					barrier[0] = true;
 					if ((barrier[1] == true) ||
 					   ((ts->finger_data[loop_i].x < prevx) &&
 					    (ts->finger_data[loop_i].x > nextx) &&
 					    (ts->finger_data[loop_i].y > 980))) {
-						prevx = 200;
+						prevx = 333;
 						barrier[1] = true;
 						if ((ts->finger_data[loop_i].x < prevx) &&
 						    (ts->finger_data[loop_i].y > 980)) {
