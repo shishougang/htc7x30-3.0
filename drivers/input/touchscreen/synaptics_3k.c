@@ -208,7 +208,7 @@ static ssize_t synaptics_sweep2wake_show(struct device *dev,
 static ssize_t synaptics_sweep2wake_dump(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t count)
 {
-	if (buf[0] >= '0' && buf[0] <= '2' && buf[1] == '\n')
+	if (buf[0] >= '0' && buf[0] <= '3' && buf[1] == '\n')
 		if (s2w_switch2 != buf[0] - '0') {
 			s2w_temp2 = buf[0] - '0';
 			if (scr_suspended2 == false)
@@ -452,53 +452,48 @@ static void synaptics_ts_work_func(struct work_struct *work)
 							//left -> right
 							if ((finger_count == 1) && (scr_suspended2 == true) && (s2w_switch2 == 1)) {							
 								prevx2 = 30;
-								nextx2 = 300;
+								nextx2 = 400;
 								if ((barrier2[0] == true) ||
 								   ((finger_data[loop_i][0] > prevx2) &&
-								    (finger_data[loop_i][0] < nextx2) && {								    (finger_data[loop_i][1] > 1780))) {
-									prevx2 = 300;
-									nextx2 = 680;
+								    (finger_data[loop_i][1] > 1900))) {									
+									prevx2 = nextx2;
+									nextx2 = 800;
 									barrier2[0] = true;
 									if ((barrier2[1] == true) ||
-									   ((finger_data[loop_i][0] > prevx2) &&
-									    (finger_data[loop_i][0] < nextx2) &&
-									    (finger_data[loop_i][1] > 1780))) {
-										prevx2 = 680;
-										barrier2[1] = true;
-										if ((finger_data[loop_i][0] > prevx2) &&
-										    (finger_data[loop_i][1] > 1780)) {
-											if (finger_data[loop_i][0] > 880) {										
-											    if (exec_count2) {
+									   ((finger_data[loop_i][0] > nextx2) &&
+									   // (finger_data[loop_i][0] < nextx2) &&
+									    (finger_data[loop_i][1] > 1900))) {
+										barrier2[1] = true;										
+											if (exec_count2) {
 													sweep2wake_pwrtrigger2();
 													exec_count2 = false;
 													break;
 												}
-											}
+											
 										}
 									}
-								}
+								
 							//right->left
 							} else if ((finger_count == 1) && (scr_suspended2 == false) && (s2w_switch2 > 0)) {
 								scr_on_touch2=true;
-								prevx2 = 1050;
-								nextx2 = 680;
+								prevx2 = 1000;
+								nextx2 = 800;
 								if ((barrier2[0] == true) ||
 								   ((finger_data[loop_i][0] < prevx2) &&
 								    (finger_data[loop_i][0] > nextx2) &&
-								    (finger_data[loop_i][1] > 1780))) {
-									prevx2 = 680;
-									nextx2 = 340;
+								    (finger_data[loop_i][1] > 1900))) {
+									prevx2 = 800;
+									nextx2 = 200;
 									barrier2[0] = true;
 									if ((barrier2[1] == true) ||
 									   ((finger_data[loop_i][0] < prevx2) &&
 									    (finger_data[loop_i][0] > nextx2) &&
-									    (finger_data[loop_i][1] > 1780))) {
-										prevx2 = 340;
+									    (finger_data[loop_i][1] > 1900))) {
+										prevx2 = 200;
 										barrier2[1] = true;
 										if ((finger_data[loop_i][0] < prevx2) &&
-										    (finger_data[loop_i][1] > 1780)) {
-											if (finger_data[loop_i][0] < 270) {
-												if (exec_count2) {
+										    (finger_data[loop_i][1] > 1900)) {
+													if (exec_count2) {
 													sweep2wake_pwrtrigger2();
 													exec_count2 = false;
 													break;
@@ -795,6 +790,8 @@ static int synaptics_ts_suspend(struct i2c_client *client, pm_message_t mesg)
 		hrtimer_cancel(&ts->timer);
 		ret = cancel_work_sync(&ts->work);
 	}
+	
+	ret = cancel_work_sync(&ts->work);
 	
 #ifdef CONFIG_TOUCHSCREEN_SYNAPTICS_SWEEP2WAKE
 	if (s2w_switch2 == 0) {
